@@ -1,6 +1,14 @@
-import { initializeApp } from 'firebase/app'
-import { getFirestore, getDocs, collection, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore'
-import { useEffect, useState } from 'react';
+import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  deleteDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import './styles.css';
 import Modal from 'react-modal';
 
@@ -9,7 +17,6 @@ const firebaseApp = initializeApp({
   authDomain: "rhapp-bafe6.firebaseapp.com",
   projectId: "rhapp-bafe6",
 });
-//Lista de tarefas (paginação, pesquisa)
 
 export const App = () => {
   const [name, setName] = useState("")
@@ -21,9 +28,8 @@ export const App = () => {
   const [editingUserId, setEditingUserId] = useState(null);
 
   const db = getFirestore(firebaseApp);
-  const userCollectionRef = collection(db, "users");
+  const usersCollectionRef = collection(db, "users");
 
-  // Cadastrar no db
   async function criarUser() {
     if (editingUserId) {
       // Atualizar usuário existente
@@ -37,49 +43,35 @@ export const App = () => {
       });
       setEditingUserId(null); // Limpar o ID de edição
     } else {
-      // Adicionar novo usuário
-      const user = await addDoc(userCollectionRef, {
-        name,
-        setor,
-        cpf,
-        id_func,
-        dataadm,
-      });
-      console.log(user);
+        try {
+          const user = await addDoc(collection(db, "users"), {
+            name,
+            setor,
+            cpf,
+            id_func,
+            dataadm,
+          });
+          setEditingUserId(null);
+          console.log("dados salvos com sucessos", user);
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+
     }
-
-    // Atualizar o estado local com os novos dados
-    const updatedData = await getDocs(userCollectionRef);
-    setUsers(updatedData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
-    // Limpar os campos de entrada após adicionar/atualizar
-    setName("");
-    setSetor("");
-    setCpf("");
-    setId("");
-    setDataAdm("");
-    closeModal();
+    
   }
 
-  //Trazer todos os dados que ja estao cadastrados no db
   useEffect(() => {
     const getUsers = async () => {
-      const data = await getDocs(userCollectionRef)
+      const data = await getDocs(usersCollectionRef);
       setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getUsers();
-  }, [userCollectionRef]);
+  }, []);
 
   async function deleteUser(id) {
-    const userDoc = doc(db, 'users', id);
+    const userDoc = doc(db, "users", id);
     await deleteDoc(userDoc);
-    const updatedData = await getDocs(userCollectionRef);
-    setUsers(updatedData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
-    // Se o usuário excluído estava sendo editado, limpar o estado de edição
-    if (editingUserId === id) {
-      setEditingUserId(null);
-    }
   }
 
 
@@ -106,10 +98,8 @@ export const App = () => {
     openModal();
   };
 
-
   return (
     <div>
-
       <button onClick={openModal}>Criar Usuário</button>
 
       <Modal
@@ -144,7 +134,7 @@ export const App = () => {
           value={cpf}
           onChange={(e) => setCpf(e.target.value)}
         /><br></br>
-        
+
         <label>ID: </label>
         <br></br>
         <input
@@ -162,14 +152,14 @@ export const App = () => {
           value={dataadm}
           onChange={(e) => setDataAdm(e.target.value)}
         /><br></br>
-        
+
         <button onClick={() => {
           criarUser();
           closeModal();
         }}>{editingUserId ? 'Editar' : 'Criar'} Usuário</button>
         <button onClick={closeModal}>Fechar</button>
       </Modal>
-      {/* TABELA */}
+
       <table style={{ width: '100%' }}>
         <thead>
           <tr>
@@ -179,7 +169,7 @@ export const App = () => {
             <th>Setor</th>
             <th>CPF</th>
             <th>Data Admissão</th>
-            
+
           </tr>
         </thead>
         <tbody>
@@ -187,18 +177,18 @@ export const App = () => {
             <tr key={user.id}>
               <td>
                 <button onClick={() => openEditModal(user)}>Editar</button>
-                <button onClick={() => deleteUser(user.id)}>Deletar</button>             
+                <button onClick={() => deleteUser(user.id)}>Deletar</button>
               </td>
               <td>{user.id_func}</td>
               <td>{user.name}</td>
               <td>{user.setor}</td>
               <td>{user.cpf}</td>
               <td>{user.dataadm}</td>
-              
+
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-}
+};
