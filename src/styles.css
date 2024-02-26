@@ -1,27 +1,47 @@
 /* styles.css */
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  th, td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    margin-right: 5px;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+  width: 100px;
+  /* Defina a largura desejada para os botões */
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+
+.form-section {
+  float: left;
+  width: 50%;
+}
+
+.address-section {
+  float: right;
+  width: 50%;
+}
+
+/* Limpar a flutuação para evitar problemas de layout */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
