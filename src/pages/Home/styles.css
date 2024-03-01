@@ -21,6 +21,7 @@ button {
   cursor: pointer;
   margin-right: 5px;
   width: 100px;
+  border-radius: 10px;
   /* Defina a largura desejada para os botões */
 }
 

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import './styles.css';
 import Modal from 'react-modal';
 import { app } from "../../services/firebaseConfig";
-import { signOut } from "firebase/auth";
 import { useContext } from "react";
 import { AuthGoogleContext } from "../../context/authGoogle";
 
@@ -34,47 +33,20 @@ export const Home = () => {
 
   const { user, signOut } = useContext(AuthGoogleContext);
 
+  const userData = {
+    name, setor, cpf, id_func, dataadm, address, neighborhood, city, zipCode, cellphone, dob, identity, workCard, estadoCivil, email,
+  };
+  
+
   async function criarUser() {
     if (editingUserId) {
       // Atualizar usuário existente
       const userDoc = doc(db, 'users', editingUserId);
-      await updateDoc(userDoc, {
-        name,
-        setor,
-        cpf,
-        id_func,
-        dataadm,
-        address,
-        neighborhood,
-        city,
-        zipCode,
-        cellphone,
-        dob,
-        identity,
-        workCard,
-        estadoCivil,
-        email,
-      });
+      await updateDoc(userDoc, userData);
       setEditingUserId(null); // Limpar o ID de edição
     } else {
       try {
-        const user = await addDoc(collection(db, "users"), {
-          name,
-          setor,
-          cpf,
-          id_func,
-          dataadm,
-          address,
-          neighborhood,
-          city,
-          zipCode,
-          cellphone,
-          dob,
-          identity,
-          workCard,
-          estadoCivil,
-          email,
-        });
+        const user = await addDoc(collection(db, "users"), userData);
         setEditingUserId(null);
         console.log("dados salvos com sucessos", user);
       } catch (e) {
